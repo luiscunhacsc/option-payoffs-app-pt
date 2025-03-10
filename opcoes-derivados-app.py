@@ -1,8 +1,12 @@
-import streamlit as st
+        st.markdown("""
+        A linha verde (Call - Put) sobrepõe-se perfeitamente à linha preta tracejada (Ativo - Exercício) no vencimento,
+        demonstrando a paridade put-call.
+        """)import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from math import exp
+from scipy.stats import norm
 
 st.set_page_config(page_title="Explorador de Opções e Derivativos", layout="wide")
 
@@ -454,7 +458,7 @@ elif page == "Paridade Put-Call":
     
     ### A Fórmula
     
-    $$ C - P = S - K e^{-r(T-t)} $$
+    $C - P = S - K e^{-r(T-t)}$
     
     Onde:
     - $C$ é o preço da call
@@ -476,9 +480,9 @@ elif page == "Paridade Put-Call":
         
         # Calcular preços teóricos (usando modelo muito básico para ilustração)
         vol = 0.2  # Volatilidade assumida
+        from scipy.stats import norm
         d1 = 1/(vol*np.sqrt(T)) * (np.log(S0/K) + (r + vol**2/2)*T)
         d2 = d1 - vol*np.sqrt(T)
-        from scipy.stats import norm
         call_price = S0 * norm.cdf(d1) - K * np.exp(-r*T) * norm.cdf(d2)
         put_price = K * np.exp(-r*T) * norm.cdf(-d2) - S0 * norm.cdf(-d1)
         
@@ -531,14 +535,13 @@ elif page == "Paridade Put-Call":
         
         st.pyplot(fig)
         
-        st.markdown("""
-        A linha verde (Call - Put) sobrepõe-se perfeitamente à linha preta tracejada (Ativo - Exercício) no vencimento,
-        demonstrando a paridade put-call.
-        
+        st.markdown(f"""
         ### Oportunidade de Arbitragem
+        
         Se a paridade put-call não se mantiver no mercado, existe uma oportunidade de arbitragem:
-        1. Se C - P > S - Ke^(-rT), venda a call, compre a put, venda o ativo a descoberto e invista Ke^(-rT)
-        2. Se C - P < S - Ke^(-rT), compre a call, venda a put, compre o ativo e peça emprestado Ke^(-rT)
+        
+        1. Se $C - P > S - K \cdot e^{-rT}$, venda a call, compre a put, venda o ativo a descoberto e invista $K \cdot e^{-rT}$
+        2. Se $C - P < S - K \cdot e^{-rT}$, compre a call, venda a put, compre o ativo e peça emprestado $K \cdot e^{-rT}$
         """)
 
 # Página de Fatores que Afetam o Preço
@@ -575,9 +578,9 @@ elif page == "Fatores que Afetam o Preço":
         S_range = np.linspace(70, 130, 100)
         
         # Calcular preços teóricos usando aproximação Black-Scholes
+        from scipy.stats import norm
         d1 = 1/(vol*np.sqrt(T)) * (np.log(S_range/K) + (r + vol**2/2)*T)
         d2 = d1 - vol*np.sqrt(T)
-        from scipy.stats import norm
         call_prices = S_range * norm.cdf(d1) - K * np.exp(-r*T) * norm.cdf(d2)
         put_prices = K * np.exp(-r*T) * norm.cdf(-d2) - S_range * norm.cdf(-d1)
         
@@ -659,6 +662,7 @@ elif page == "Fatores que Afetam o Preço":
         
         for T in T_values:
             # Calcular preços das calls
+        from scipy.stats import norm
             d1 = 1/(vol*np.sqrt(T)) * (np.log(S_range/K) + (r + vol**2/2)*T)
             d2 = d1 - vol*np.sqrt(T)
             call_prices = S_range * norm.cdf(d1) - K * np.exp(-r*T) * norm.cdf(d2)
@@ -907,7 +911,7 @@ elif page == "Fatores que Afetam o Preço":
         - As opções de compra tornam-se mais valiosas com taxas mais altas (menor valor presente do exercício)
         - As opções de venda tornam-se menos valiosas com taxas mais altas (menor valor presente do exercício)
         
-        Na paridade put-call: C - P = S - Ke^(-rT)
+        Na paridade put-call: $C - P = S - K \cdot e^{-rT}$
         """)
         
     elif factor == "Preço de Exercício":
